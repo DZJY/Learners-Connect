@@ -6,9 +6,11 @@ Watch Tailwind CSS File
 npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch
 ```
 
-Run Development server
+How To Run Development server
 
 ```
+Put .env.local file in root directory
+If running for first time: npm i 
 npm run dev
 ```
 

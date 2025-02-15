@@ -12,6 +12,7 @@ export default async function handler(req: any, res: any) {
       if (!req.body) {
         return res.status(404).json({ error: 'No form data' });
       }
+      // points, forum, friends
       const { name, email, password } = req.body;
 
       // Check duplicate users
@@ -22,13 +23,24 @@ export default async function handler(req: any, res: any) {
 
       // Hash password
       const hashedPassword = await hash(password, 12);
-      const user = new Users({ name, email, password: hashedPassword });
+
+      const points = 100;
+      const friends: string[] = [];
+
+      // Initialise new user with 100 points
+      const user = new Users({
+        name,
+        email,
+        password: hashedPassword,
+        friends,
+        points,
+      });
+
       await user.save();
 
       return res.status(201).json({ status: true, user });
-    } else {
-      return res.status(500).json({ message: 'HTTP method not valid, only POST accepted' });
     }
+      return res.status(500).json({ message: 'HTTP method not valid, only POST accepted' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal server error' });
