@@ -28,9 +28,9 @@ const extractPdfContent = async (buffer: Buffer): Promise<string> => {
     throw new Error('GOOGLE_APPLICATION_PDF_CREDENTIALS environment variable is not set');
   }
   // Add your Google Cloud project ID, location, and processor ID here
-  const projectId = 'capable-bliss-378816';
+  const projectId = 'aswe-451009';
   const location = 'us';
-  const processorId = '9b70de812ae7194a';
+  const processorId = '5c51d07942d83347';
 
   const name = `projects/${projectId}/locations/${location}/processors/${processorId}`;
 
