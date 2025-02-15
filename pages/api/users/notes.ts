@@ -31,8 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filesCollection = db.collection('fs.files');
 
     // Fetch user's uploaded notes
-    const uploadedNotes = await filesCollection
+    const uploadedNotesRaw = await filesCollection
       .find({ 'metadata.userEmail.0': email }) // GridFS stores metadata.userEmail as an array
+      .project({ filename: 1, length: 1, 'metadata.userName': 1, 'metadata.title': 1, _id: 1 }) // Select only required fields
       .toArray();
 
     // Fetch user's bought notes
@@ -44,9 +45,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const ownedNoteIds = user.NotesOwned?.map((id: string) => new ObjectId(id)) || [];
 
-    const boughtNotes = ownedNoteIds.length
-      ? await filesCollection.find({ _id: { $in: ownedNoteIds } }).toArray()
+    const boughtNotesRaw = ownedNoteIds.length
+      ? await filesCollection
+          .find({ _id: { $in: ownedNoteIds } })
+          .project({ filename: 1, length: 1, 'metadata.userName': 1, 'metadata.title': 1, _id: 1 }) // Select only required fields
+          .toArray()
       : [];
+
+    // Transform data to return correct structure
+    const formatNotes = (notes: any[]) =>
+      notes.map((note) => ({
+        filename: note.filename,
+        length: note.length,
+        userName: note.metadata?.userName || [],
+        title: note.metadata?.title || [],
+        _id: note._id,
+      }));
+
+    const uploadedNotes = formatNotes(uploadedNotesRaw);
+    const boughtNotes = formatNotes(boughtNotesRaw);
 
     return res.status(200).json({ uploadedNotes, boughtNotes });
   } catch (error) {
