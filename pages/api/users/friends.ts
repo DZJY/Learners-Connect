@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectMongo from '../../../database/conn';
-import Users from '../../../model/Schema';
+import { Users } from '../../../model/Schema';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectMongo(); // Ensure MongoDB is connected

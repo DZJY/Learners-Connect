@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectMongo from '../../../database/conn';
-import Users from '../../../model/Schema';
+import { Users } from '../../../model/Schema';
 import { userAgent } from 'next/server';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' });
 
       // add buy function
-      
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });

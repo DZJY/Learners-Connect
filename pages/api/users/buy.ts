@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient, ObjectId } from 'mongodb';
 import connectMongo from '../../../database/conn';
-import Users from '../../../model/Schema';
+import { Users } from '../../../model/Schema';
 
 const { MONGO_URI } = process.env;
 
