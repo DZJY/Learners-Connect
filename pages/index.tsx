@@ -55,7 +55,7 @@ export default function HomePage() {
   ) : (
     <>
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: '65px', fontWeight: 'bold' }}>Welcome to SummAIze</h1>
+        <h1 style={{ fontSize: '65px', fontWeight: 'bold' }}>Welcome to LearnersConnect</h1>
         <h4 style={{ fontSize: '25px', fontWeight: 'bold' }}>Effortless Learning, Instant Notes</h4>
         <p style={{ fontSize: '20px', paddingLeft: '150px', paddingRight: '150px' }}>
           We are a group of students looking to streamline the process of absorbing information.
