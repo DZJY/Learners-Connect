@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient, Db, GridFSBucket } from 'mongodb';
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
-import { OpenAIApi, Configuration } from 'openai';
+import { OpenAI } from 'openai';
 import { convertToHtml } from 'mammoth/mammoth.browser';
 import path from 'path';
 import connectToAuthDB from '../../database/authConn';
@@ -159,9 +159,6 @@ const extractVideoContent = async (
   }
 };
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Summarize the content using OpenAI
 const summarizeContent = async (content: string, isDocx: boolean): Promise<string> => {
@@ -175,19 +172,23 @@ const summarizeContent = async (content: string, isDocx: boolean): Promise<strin
   const prompt = `${cleanedContent} \n\nPlease provide a detailed summary of the above text.`;
 
   // Create an instance of OpenAI with your API key
-  const openai = new OpenAIApi(configuration);
-
-  // Make a request to the OpenAI API to generate the summary
-  const response = await openai.createCompletion({
-    model: 'text-davinci-003', // Choose the appropriate OpenAI model
-    prompt: prompt,
-    max_tokens: 1000, // Adjust the maximum number of tokens as needed
-    temperature: 0.7, // Adjust the temperature for controlling randomness
-    n: 1, // Generate a single response
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
+  // Make a request to the OpenAI API to generate the summary
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4', // Default to GPT-4 if no model is provided
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 1000, // Adjust token limit as needed
+    temperature: 0.7, // Adjust for randomness
+    n: 1,
+  });
+
+  console.log(response);
+
   // Extract the summary from the response
-  let summary = response.data.choices[0]?.text?.trim() || '';
+  let summary = response.choices[0]?.message?.content?.trim() || '';
   if (summary[0] == ':') {
     summary = summary.slice(2);
   }
@@ -201,20 +202,21 @@ const generateQnA = async (summary: string): Promise<string> => {
     Question: What is the main topic of the lecture?\n
     Answer: The main topic of the lecture is (main topic from summary). The answers should be sufficiently detailed.`;
   // Create an instance of OpenAI with your API key
-  const openai = new OpenAIApi(configuration);
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   // Make a request to the OpenAI API to generate the summary
-  const response = await openai.createCompletion({
-    model: 'text-davinci-003', // Choose the appropriate OpenAI model
-    prompt: prompt,
-    max_tokens: 1000, // Adjust the maximum number of tokens as needed
-    temperature: 0.7, // Adjust the temperature for controlling randomness
-    n: 1, // Generate a single response
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4', // Default to GPT-4 if no model is provided
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 1000, // Adjust token limit as needed
+    temperature: 0.7, // Adjust for randomness
+    n: 1,
   });
 
   // Extract the reply from the response
-  let qna = response.data.choices[0]?.text?.trim() || '';
-  console.log(response.data.choices[0]?.text);
+  let qna = response.choices[0]?.message.content?.trim() || '';
   console.log(qna);
 
   return qna;
