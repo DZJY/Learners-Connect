@@ -110,7 +110,7 @@ export function ContactUs() {
           <div className={classes.form}>
             <TextInput
               label="Email"
-              placeholder="hello@summaize.com"
+              placeholder="hello@learnersConnect.com"
               required
               classNames={{ input: classes.input, label: classes.inputLabel }}
             />
@@ -134,7 +134,7 @@ export function ContactUs() {
             <Group position="right" mt="md">
               <Button
                 component="a"
-                href={`mailto:summaize@gmail.com?subject=${encodeURIComponent(
+                href={`mailto:learnersConnect@gmail.com?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(message)}`}
                 className={classes.control}

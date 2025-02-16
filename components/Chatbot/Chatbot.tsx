@@ -103,7 +103,7 @@ const Chatbot = () => {
                 <FiX size={24} />
               </Button>
               <Text className={styles.text} size="xl" weight={700} align="center">
-                SummAIze Bot
+                learnersConnect Bot
               </Text>
               <Box className={styles.messagesBox}>
                 {messages.map((message) => (
@@ -134,7 +134,7 @@ const Chatbot = () => {
                     </Box>
                   </Box>
                 ))}
-                {isLoading && <Text>SummAIze bot is thinking{dots}</Text>}
+                {isLoading && <Text>learnersConnect bot is thinking{dots}</Text>}
               </Box>
               <Box className={styles.inputBox}>
                 <Input

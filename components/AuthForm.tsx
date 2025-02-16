@@ -77,7 +77,7 @@ export function AuthenticationForm(props: PaperProps) {
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
       <Text size="lg" weight={500}>
-        Welcome to SummAIze, {type} with
+        Welcome to LearnersConnect, {type} with
       </Text>
 
       <Group grow mb="md" mt="md">
