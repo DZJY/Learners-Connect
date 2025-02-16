@@ -1,6 +1,6 @@
 import { createStyles, Text, Container, ActionIcon, Group, rem } from '@mantine/core';
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons-react';
-import SummAIzeLogo from '../../images/summAIze.png';
+import LearnersLogo from '../../images/Learners.png';
 import { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -108,7 +108,7 @@ interface FooterLinksProps {
 }
 
 export function FooterLinks({ data }: FooterLinksProps) {
-  const logoSrc = (SummAIzeLogo as StaticImageData).src;
+  const logoSrc = (LearnersLogo as StaticImageData).src;
   const { classes } = useStyles();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
@@ -150,7 +150,7 @@ export function FooterLinks({ data }: FooterLinksProps) {
         <div className={classes.logo}>
           <img
             src={logoSrc}
-            alt="SummAIze Logo"
+            alt="Learners Logo"
             style={{ width: '200px', height: 'auto', marginBottom: '10px' }}
           />
           <Text size="xs" color="dimmed" className={classes.description}>

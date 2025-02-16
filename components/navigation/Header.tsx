@@ -36,7 +36,7 @@ import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { AuthenticationForm } from '../AuthForm';
-import SummAIzeLogo from '../../images/summAIze.png';
+import LearnersLogo from '../../images/Learners.png';
 import { StaticImageData } from 'next/image';
 import { useModalContext } from '../../contexts/ModalContext'; // adjust the path accordingly
 
@@ -137,7 +137,7 @@ const mockdata = [
 ];
 
 export function HeaderMegaMenu() {
-  const logoSrc = (SummAIzeLogo as StaticImageData).src;
+  const logoSrc = (LearnersLogo as StaticImageData).src;
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes, theme } = useStyles();
@@ -168,7 +168,7 @@ export function HeaderMegaMenu() {
       <Header height={60} px="md" className={classes.header}>
         <Group position="apart" sx={{ height: '100%', marginBottom: '80px' }}>
           <Link href="/">
-            <img src={logoSrc} alt="SummAIze Logo" style={{ width: '130px', height: 'auto' }} />
+            <img src={logoSrc} alt="Learners Logo" style={{ width: '130px', height: 'auto' }} />
           </Link>
           <Group sx={{ height: '100%' }} spacing={0} my={0} className={classes.hiddenMobile}>
             <Link href="/" className={classes.link}>
