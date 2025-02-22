@@ -66,6 +66,9 @@ export default function HomePage() {
       <FeatureCards features={features} />
         {/* <Image className={classes.img} src={test.src} /> */}
       </div>
+      <div style={{ textAlign: 'center' }}>
+        <h2>Search through our database of over 10 thousand notes!</h2>
+      </div>
       <ArticleSection notes={notes} />
       <div
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}

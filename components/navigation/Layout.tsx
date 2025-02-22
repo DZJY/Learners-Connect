@@ -20,6 +20,10 @@ const Layout = ({ children }: LayoutProps) => {
             label:'Upload Notes',
             link: '/new-upload',
           },
+          {
+            label:'My Notes',
+            link:'/my-notes',
+          },
         ]
       }
   ];

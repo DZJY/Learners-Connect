@@ -106,7 +106,6 @@ export default function ArticleSection({
   }
   return (
     <div className={classes.header}>
-      <h2>Search through our database of over 10 thousand notes!</h2>
       <SearchBar onSearch={handleSearch} />
       <Card className={classes.card}>
         {notesToRender.map((note, index) => (
