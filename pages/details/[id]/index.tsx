@@ -76,43 +76,35 @@ export default function Page({ note }: PageProps) {
   }
   const [isOwner, setIsOwner] = useState(false);
   const [isBuyer, setIsBuyer] = useState(false);
-  const { data: session } = useSession();
-  if (session) {
-    const userEmail = session?.user?.email;
-    console.log(userEmail);
-    console.log(session);
-  }
+  const { data: session, status } = useSession();
+
   console.log(isOwner);
   console.log(isBuyer);
 
   useEffect(() => {
-    const checkOwnership = async () => {
-      if (session) {
+    if (status === 'authenticated') {
+      (async () => {
         try {
-          const userEmail = session?.user?.email;
-          console.log(userEmail);
+          const userEmail = session.user?.email;
           const response = await fetch(`/api/users/notes?email=${userEmail}`);
           const data = await response.json();
-          console.log(data);
           if (response.ok) {
-            const uploadedNotes = data.uploadedNotes.map((n: any) => n._id);
-            const boughtNotes = data.boughtNotes.map((n: any) => n._id);
-            console.log(uploadedNotes);
-            console.log(boughtNotes);
-            if (uploadedNotes.includes(note.fileId)) {
+            const uploadedNotes = data.uploadedNotes.map((n: any) => n._id.toString());
+            const boughtNotes = data.boughtNotes.map((n: any) => n._id.toString());
+            const noteFileIdString = note.fileId.toString();
+
+            if (uploadedNotes.includes(noteFileIdString)) {
               setIsOwner(true);
-            } else if (boughtNotes.includes(note.fileId)) {
+            } else if (boughtNotes.includes(noteFileIdString)) {
               setIsBuyer(true);
             }
           }
         } catch (error) {
           console.error("Error checking note ownership:", error);
         }
-      }
-    };
-
-    checkOwnership();
-  }, []);
+      })();
+    }
+  }, [status, session, note.fileId]);
 
   return (
     <Container>
