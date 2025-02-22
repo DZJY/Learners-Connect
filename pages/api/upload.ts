@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient, Db, GridFSBucket } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
 import { OpenAI } from 'openai';
 import { convertToHtml } from 'mammoth/mammoth.browser';
 import path from 'path';
 import connectToAuthDB from '../../database/authConn';
+import connectToUserDB from '../../database/userConn';
 import { SpeechClient } from '@google-cloud/speech';
 import { Storage } from '@google-cloud/storage';
 // @ts-ignore
@@ -242,6 +243,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const db = await connectToAuthDB();
+      const userDB = await connectToUserDB();
       const bucket = new GridFSBucket(db);
       // Assuming only one file is uploaded at a time
       const file = data.files.file[0]; // access the first file in the array
@@ -315,8 +317,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               qna: qnaData,
             });
 
+            const usersCollection = userDB.collection('users'); 
+            const userEmail = data.fields.userEmail[0]; 
+
+            if (userEmail) {
+              const existingUser = await usersCollection.findOne({ email: userEmail });
+              const updateResult = await usersCollection.updateOne(
+                { email: userEmail }, 
+                { $addToSet: { NotesOwned: file._id } } 
+              );              
+
             res.status(200).json({ message: 'File uploaded and summarized successfully', summary });
             return;
+            }
           });
         } catch (error) {
           res.status(500).json({ error: 'Error summarizing file content' });

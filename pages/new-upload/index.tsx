@@ -1,4 +1,3 @@
-import axios from 'axios';
 import UploadTabs from '../../components/NewUpload/UploadTabs';
 import { TextInputs } from '../../components/NewUpload/TextInputs';
 import { SubmitButton } from '../../components/NewUpload/SubmitButton';
@@ -46,13 +45,11 @@ export default function NewUploadPage() {
       const text = await response.text();
       throw new Error(`Request failed: ${text}`);
     }
-    console.log(userEmail);
-    console.log(amount);
     
     const addpointsresponse = await fetch('/api/users/points', {
       method:'POST',
       headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, amount }),
+      body: JSON.stringify({ email: userEmail, amount }),
     });
 
     if (!addpointsresponse.ok) {
