@@ -6,20 +6,21 @@ import { userAgent } from 'next/server';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectMongo();
   console.log(req);
-  const { email, amount } = req.query;
-
+  
   try {
+    const { email } = req.query;
     if (req.method === 'GET') {
       // Fetch user's points
 
       const user = await Users.findOne({ email });
-
+      console.log("EMAIL", email);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
 
       return res.status(200).json({ points: user.points });
-    } if (req.method === 'POST') {
+    } else if (req.method === 'POST') {
+      const { email, amount } = req.body;
       const user = await Users.findOne({ email });
       const currentPoints = user.points;
       // Add points to user
@@ -34,7 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       return res.status(200).json({ message: 'Points updated', PreviousPoints: currentPoints, PointsAdded: amount, Updatedpoints: updatedUser.points });
-    } if (req.method === 'PUT') {
+    } else if (req.method === 'PUT') {
+        const { email, amount } = req.body;
         const user = await Users.findOne({ email });
         const currentPoints = user.points;
       // Deduct points from user
