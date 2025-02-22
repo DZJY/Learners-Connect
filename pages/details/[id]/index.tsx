@@ -1,13 +1,14 @@
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 import TableOfContents from '../../../components/tableOfContents';
-import { Grid, Container } from '@mantine/core';
+import { Grid, Container, Button } from '@mantine/core';
 import { ObjectId } from 'mongodb';
 import {
   DownloadOriginalButton,
   DownloadSummaryButton,
 } from '../../../components/details/DownloadButton';
 import { Accordion } from '@mantine/core';
-
+import { useSession } from 'next-auth/react';
 import connectToAuthDB from '../../../database/authConn';
 
 interface Note {
@@ -25,21 +26,26 @@ interface PageProps {
 export async function getServerSideProps(context: any) {
   const db = await connectToAuthDB();
   const { params } = context;
+  console.log(params);
+  try {
+    const note = await db.collection('summaries').findOne({ fileId: new ObjectId(params.id) });
 
-  // Assuming the note's ID is passed as a URL parameter and
-  // you have a `notes` collection in your MongoDB database
+    if (!note) {
+      return { props: { note: null } };
+    }
 
-  const note = await db.collection('summaries').findOne({ fileId: new ObjectId(params.id) });
-
-  // The note object can be directly included in props if it's serializable.
-  // If not, you might need to convert it to a JSON string and then parse it back in the component.
-
-  return {
-    props: {
-      note: JSON.parse(JSON.stringify(note)),
-    },
-  };
+    return {
+      props: {
+        note: JSON.parse(JSON.stringify(note)),
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching note:", error);
+    return { props: { note: null } };
+  }
 }
+
+
 const links = [
   {
     label: 'Description',
@@ -60,6 +66,54 @@ const links = [
 
 export default function Page({ note }: PageProps) {
   const router = useRouter();
+  if (!note) {
+    return (
+      <Container>
+        <h2>Note Not Found</h2>
+        <p>The note you are looking for does not exist.</p>
+      </Container>
+    );
+  }
+  const [isOwner, setIsOwner] = useState(false);
+  const [isBuyer, setIsBuyer] = useState(false);
+  const { data: session } = useSession();
+  if (session) {
+    const userEmail = session?.user?.email;
+    console.log(userEmail);
+    console.log(session);
+  }
+  console.log(isOwner);
+  console.log(isBuyer);
+
+  useEffect(() => {
+    const checkOwnership = async () => {
+      if (session) {
+        try {
+          const userEmail = session?.user?.email;
+          console.log(userEmail);
+          const response = await fetch(`/api/users/notes?email=${userEmail}`);
+          const data = await response.json();
+          console.log(data);
+          if (response.ok) {
+            const uploadedNotes = data.uploadedNotes.map((n: any) => n._id);
+            const boughtNotes = data.boughtNotes.map((n: any) => n._id);
+            console.log(uploadedNotes);
+            console.log(boughtNotes);
+            if (uploadedNotes.includes(note.fileId)) {
+              setIsOwner(true);
+            } else if (boughtNotes.includes(note.fileId)) {
+              setIsBuyer(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error checking note ownership:", error);
+        }
+      }
+    };
+
+    checkOwnership();
+  }, []);
+
   return (
     <Container>
       <h2>{note.title}</h2>
@@ -88,10 +142,21 @@ export default function Page({ note }: PageProps) {
           })}
           <br />
           <div style={{ display: 'flex' }}>
-            <DownloadOriginalButton fileId={note.fileId} />
-            <div style={{ marginLeft: '20px' }}>
+            
+            {isOwner ? (
+              <>
+                <DownloadOriginalButton fileId={note.fileId} />
+                <div style={{ marginLeft: '20px' }}>
+                  <DownloadSummaryButton summary={note.summary} />
+                </div>
+              </>
+            ) : isBuyer ? (
               <DownloadSummaryButton summary={note.summary} />
-            </div>
+            ) : (
+              <Button color="blue" onClick={() => alert('Redirecting to purchase...')}>
+                Buy Now
+              </Button>
+            )}
           </div>
         </Grid.Col>
       </Grid>

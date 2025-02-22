@@ -167,16 +167,15 @@ export function HeaderMegaMenu() {
   return (
     <Box pb="md">
       <Header height={60} px="md" className={classes.header}>
-        <Group position="apart" sx={{ height: '100%', marginBottom: '80px' }}>
+        <Group position="apart" sx={{ height: '100%', marginBottom: '80px'}}>
           <Link href="/">
             <img src={logoSrc} alt="Learners Logo" style={{ width: '130px', height: 'auto' }} />
           </Link>
-          <Group sx={{ height: '100%' }} spacing={0} my={0} className={classes.hiddenMobile}>
+          <Group sx={{ height: '100%'}} spacing={0} my={0} className={classes.hiddenMobile}>
             <Link href="/" className={classes.link}>
               <IconHome2 size={20} />
               Home
             </Link>
-
             <Link href="/all-notes" className={classes.link}>
               <IconClipboardText size={20} />
               All Notes
@@ -202,8 +201,8 @@ export function HeaderMegaMenu() {
             {session ? (
               <>
                 <Group sx={{ height: '100%' }} align="center">
-                  <ColorSchemeToggle />
-                  <Avatar radius="xl" />
+                  {/* <ColorSchemeToggle /> */}
+                  {/* <Avatar radius="xl" /> */}
                   <Text>{session?.user?.name}</Text>
                   <Button variant="default" onClick={() => signOut()}>
                     Sign Out
@@ -262,6 +261,9 @@ export function HeaderMegaMenu() {
           </Link>
           <Link href="/new-upload" className={classes.link}>
             Upload New
+          </Link>
+          <Link href="/my-notes" className={classes.link}>
+            My Notes
           </Link>
 
           <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
