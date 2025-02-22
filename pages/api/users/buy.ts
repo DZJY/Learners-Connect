@@ -45,9 +45,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (note.metadata?.userEmail[0] !== sellerEmail) {
       return res.status(400).json({ error: 'Seller does not own this note.' });
     }
-
+    console.log(sellerEmail);
     // Fetch buyer and seller
     const buyer = await Users.findOne({ email: buyerEmail });
+    console.log(buyer);
     if (!buyer) return res.status(404).json({ error: 'Buyer not found.' });
 
     if (buyer.points < parsedAmount) {

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import TableOfContents from '../../../components/tableOfContents';
 import { Grid, Container, Button } from '@mantine/core';
 import { ObjectId } from 'mongodb';
+import BuyNowButton from '../../../components/BuyButton';
 import {
   DownloadOriginalButton,
   DownloadSummaryButton,
@@ -90,8 +91,11 @@ export default function Page({ note }: PageProps) {
           const data = await response.json();
           if (response.ok) {
             const uploadedNotes = data.uploadedNotes.map((n: any) => n._id.toString());
+            console.log(uploadedNotes);
             const boughtNotes = data.boughtNotes.map((n: any) => n._id.toString());
+            console.log(boughtNotes);
             const noteFileIdString = note.fileId.toString();
+            console.log(noteFileIdString)
 
             if (uploadedNotes.includes(noteFileIdString)) {
               setIsOwner(true);
@@ -105,6 +109,8 @@ export default function Page({ note }: PageProps) {
       })();
     }
   }, [status, session, note.fileId]);
+
+  
 
   return (
     <Container>
@@ -140,14 +146,17 @@ export default function Page({ note }: PageProps) {
                 <DownloadOriginalButton fileId={note.fileId} />
                 <div style={{ marginLeft: '20px' }}>
                   <DownloadSummaryButton summary={note.summary} />
-                </div>
+                </div>      
               </>
             ) : isBuyer ? (
               <DownloadSummaryButton summary={note.summary} />
             ) : (
-              <Button color="blue" onClick={() => alert('Redirecting to purchase...')}>
-                Buy Now
-              </Button>
+              <BuyNowButton 
+                buyerEmail={session?.user?.email || ""}
+                sellerEmail="Test3@gmail.com" 
+                noteId={note.fileId}
+                amount={10} 
+              />
             )}
           </div>
         </Grid.Col>
