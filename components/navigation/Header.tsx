@@ -30,6 +30,7 @@ import {
   IconBookmarks,
   IconNotes,
   IconBookUpload,
+  IconClipboardText,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
@@ -176,20 +177,26 @@ export function HeaderMegaMenu() {
               Home
             </Link>
 
-            {session && (
-              <Link href="/bookmarks" className={classes.link}>
-                <IconBookmarks size={20} />
-                Bookmarks
-              </Link>
-            )}
             <Link href="/all-notes" className={classes.link}>
-              <IconNotes size={20} />
+              <IconClipboardText size={20} />
               All Notes
             </Link>
-            <Link href="/new-upload" className={classes.link}>
-              <IconBookUpload size={20} />
-              Upload New
-            </Link>
+            {session && (
+              <div style={{display:'flex', flexDirection:'row'}}>
+                <Link href="/new-upload" className={classes.link}>
+                  <IconBookUpload size={20} />
+                  Upload New
+                </Link>
+                <Link href="/bookmarks" className={classes.link}>
+                  <IconBookmarks size={20} />
+                  Bookmarks
+                </Link>
+                <Link href="/my-notes" className={classes.link}>
+                  <IconNotes size={20} />
+                  My Notes
+                </Link> 
+              </div>
+            )}
           </Group>
           <Group sx={{ height: '100%' }} spacing={10} my={0} className={classes.hiddenMobile}>
             {session ? (
