@@ -194,6 +194,10 @@ export function HeaderMegaMenu() {
                   <IconNotes size={20} />
                   My Notes
                 </Link> 
+                <Link href="/forum" className={classes.link}>
+                  <IconNotes size={20} />
+                  Forum
+                </Link> 
               </div>
             )}
           </Group>

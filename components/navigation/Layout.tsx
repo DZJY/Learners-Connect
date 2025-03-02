@@ -24,6 +24,10 @@ const Layout = ({ children }: LayoutProps) => {
             label:'My Notes',
             link:'/my-notes',
           },
+          {
+            label:'Forum',
+            link:'/forum',
+          },
         ]
       }
   ];
