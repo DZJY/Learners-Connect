@@ -13,6 +13,7 @@ import {
   LoadingOverlay,
   createStyles,
   Center,
+  Divider,
 } from '@mantine/core';
 import { IconSend, IconMessageCircle, IconBookmark, IconShare } from '@tabler/icons-react';
 
@@ -27,6 +28,13 @@ type Post = {
 };
 
 const useStyles = createStyles((theme) => ({
+  container: {
+    width: '100%',
+    maxWidth: '80%', // Ensure the content does not stretch too wide
+    paddingLeft: '10%', // Adds 10% padding on both sides (20% total)
+    paddingRight: '10%',
+    margin: '0 auto', // Centers the container
+  },
   card: {
     marginTop: '50px',
     display: 'grid',
@@ -39,14 +47,60 @@ const useStyles = createStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '100vh',
+    minHeight: '5vh',
+  },
+  input: {
+    padding: '16px !important',
+    width: '100% !important',
   },
   postCard: {
     cursor: 'pointer',
     transition: 'box-shadow 0.3s ease',
     '&:hover': {
-      boxShadow: theme.shadows.md,
+      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
     },
+  },
+  modalContainer: {
+    width: '100%', // Ensures it can expand fully if needed
+    maxWidth: '48rem', // Limits max width to 768px (3xl)
+    minWidth: '50vw', // ✅ Minimum width set to 50% of viewport width
+    minHeight: '50vh', // ✅ Minimum height set to 50% of viewport height
+  },
+  postButtonContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end', // ✅ Moves button to the right
+    marginTop: '1rem',
+    paddingRight: '16px',
+    paddingLeft: '16px',
+  },
+  postsContainer: {
+    width: '100%',
+    marginTop: '1.5rem', // mt-6 (24px)
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem', // space-y-4 (16px)
+  },
+  postsHeader: {
+    fontSize: "2rem", // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 700,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: "#fff",    // ✅ White text (adjust as needed)
+    marginTop: "8px",
+    marginBottom: "8px",
+  },
+  postsBodyCard: {
+    fontSize: "1rem", // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 400,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: "#fff",    // ✅ White text (adjust as needed)
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 5, // ✅ Truncates text after 5 lines
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  postsBody: {
+    fontSize: "1rem", // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 400,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: "#fff",    // ✅ White text (adjust as needed)
   },
 }));
 
@@ -65,6 +119,15 @@ export default function ForumPage() {
   // ✅ Get logged-in user's email and name
   const userEmail = session?.user?.email ?? '';
   const userName = session?.user?.name ?? 'Anonymous';
+
+  useEffect(() => {
+    if (selectedPost) {
+      document.body.style.overflow = "hidden"; // ✅ Disables background scroll
+    } else {
+      document.body.style.overflow = "auto"; // ✅ Restores scrolling when modal closes
+    }
+  }, [selectedPost]);
+  
 
   // ✅ Fetch posts from the API
   useEffect(() => {
@@ -94,10 +157,10 @@ export default function ForumPage() {
         const payload = {
           title: postTitle,
           content: postContent,
-          // email: userEmail, // ✅ Use logged-in user's email
-          // name: userName, // ✅ Use logged-in user's name
-          email: "test12@gmail.com",
-          name: "test12",
+          email: userEmail, // ✅ Use logged-in user's email
+          name: userName, // ✅ Use logged-in user's name
+          // email: 'test12@gmail.com',
+          // name: 'test12',
         };
 
         const response = await fetch('/api/forum', {
@@ -132,8 +195,8 @@ export default function ForumPage() {
 
         const payload = {
           postId,
-          //email: session.user.email, // ✅ Send email instead of user ID
-          email: 'test12@gmail.com',
+          email: session.user.email, // ✅ Send email instead of user ID
+          // email: 'test12@gmail.com',
           text: comment,
         };
 
@@ -179,115 +242,141 @@ export default function ForumPage() {
   }
 
   return (
-    <div className={classes.header}>
-      <h1>Forum</h1>
+    <div className={`w-full flex justify-center`}>
+      <div className={classes.container}>
+        <h1 className={classes.header}>Forum</h1>
 
-      {/* ✅ Display Logged-in User */}
-      {session ? (
-        <Text size="sm" color="gray">
-          Logged in as: {userName} ({userEmail})
-        </Text>
-      ) : (
-        <Text size="sm" color="red">
-          Please log in to post
-        </Text>
-      )}
-      {/* New Post */}
-      <Card shadow="sm" p="lg" withBorder className={classes.postCard}>
-        <Input
-          value={postTitle}
-          onChange={(e) => setPostTitle(e.target.value)}
-          placeholder="Enter discussion title..."
-          mt="md"
-        />
-        <Textarea
-          value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
-          placeholder="Write your discussion content..."
-          autosize
-          minRows={2}
-          mt="md"
-        />
-        <Button
-          leftIcon={<IconSend size={16} />}
-          onClick={handlePostSubmit}
-          mt="md"
-          disabled={!session}
-        >
-          Post
-        </Button>
-      </Card>
-
-      {/* Posts */}
-      <div className={classes.card}>
-        {posts.map((post) => (
-          <Card
-            key={post._id}
-            shadow="sm"
-            p="lg"
-            withBorder
-            className={classes.postCard}
-            onClick={() => setSelectedPost(post)}
-          >
-            <Text weight={600} size="lg" mt="md">
-              {post.title}
-            </Text>
-            <Text size="sm" color="gray">
-              {post.content}
-            </Text>
-            <Group position="apart" mt="md">
-              <Group>
-                <Avatar size={30} src="https://picsum.photos/30" />
-                <Text size="sm">{post.ownerId?.name || 'Anonymous'}</Text>
-              </Group>
-              <Group>
-                <ActionIcon variant="subtle" color="gray">
-                  <IconBookmark size={18} />
-                </ActionIcon>
-                <ActionIcon variant="subtle" color="gray">
-                  <IconShare size={18} />
-                </ActionIcon>
-              </Group>
-            </Group>
+        {/* New Post Section */}
+        <div className="w-full">
+          <h2 className="text-lg font-semibold mb-2">Post your own discussion</h2>
+          <Card shadow="sm" p="lg" withBorder className="w-full !bg-white rounded-lg shadow-md p-4">
+            <Input
+              value={postTitle}
+              onChange={(e) => setPostTitle(e.target.value)}
+              placeholder="Enter discussion title..."
+              className={`w-full mb-3 ${classes.input}`}
+            />
+            <Textarea
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              placeholder="Write your discussion content..."
+              autosize
+              minRows={2}
+              className={`w-full mb-3 ${classes.input}`}
+            />
+            <div className={classes.postButtonContainer}>
+              <Button
+                leftIcon={<IconSend size={16} />}
+                onClick={handlePostSubmit}
+                disabled={!session}
+                className="bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Post
+              </Button>
+            </div>
           </Card>
-        ))}
-      </div>
+        </div>
 
-      {/* Post Modal */}
-      {selectedPost && (
-        <Modal
-          opened={Boolean(selectedPost)}
-          onClose={() => setSelectedPost(null)}
-          title={selectedPost.title}
-          size="lg"
-        >
-          <Text>{selectedPost.content}</Text>
-          <Text size="sm" color="gray">
-            Posted by: {selectedPost.ownerId?.name || 'Anonymous'}
-          </Text>
-          {/* Display Comments */}
-          <div className="mt-4">
-            {selectedPost.comments.map((comment) => (
-              <div key={comment._id} className="ml-4 border-l pl-2 mt-2">
-                <Text size="sm" weight={500}>
-                  {comment.commenterId?.name || 'Anonymous'} {/* ✅ Display username */}
-                </Text>
-                <Text size="sm">{comment.text}</Text>
+        {/* Posts Section */}
+        <div className={classes.postsContainer}>
+          {posts.map((post) => (
+            <Card
+              key={post._id}
+              shadow="sm"
+              p="lg"
+              withBorder
+              className={classes.postCard}
+              onClick={() => setSelectedPost(post)}
+            >
+              <Text className={classes.postsHeader}>
+                {post.title}
+              </Text>
+              <Divider my="md" />
+              <Text className={classes.postsBodyCard}>
+                {post.content}
+              </Text>
+              <Divider my="md" />
+              <Group position="apart" mt="md" color="gray.5">
+                <Group>
+                  <Text size="sm">Posted by: {post.ownerId?.name || 'Anonymous'}</Text>
+                </Group>
+              </Group>
+            </Card>
+          ))}
+        </div>
+
+        {/* Post Modal */}
+        {selectedPost && (
+          <Modal
+            opened={Boolean(selectedPost)}
+            onClose={() => setSelectedPost(null)}
+            title={selectedPost?.title}
+            styles={{
+              title: {
+                fontSize: "2rem",  // ✅ Larger title
+                fontWeight: 700,      // ✅ Bold text
+                width: "100%",        // ✅ Make it take full width
+              },
+              inner: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+                content: {
+                  width: "100%",
+                  maxWidth: "48rem",
+                  minWidth: "50vw",
+                  minHeight: "50vh",
+                  maxHeight: "90vh", // ✅ Prevents modal from growing too large
+                  padding: "1.5rem",
+                },
+              
+            }}
+          >
+            
+            {/* ✅ Content Styling */}
+            <Text className={classes.postsBody}>
+              {selectedPost?.content}
+            </Text>
+            {/* ✅ Divider to Separate Post from Comments */}
+            <Divider my="md" />
+            {/* ✅ "Posted by" Section */}
+            <Text size="sm" color="dimmed" mb="md">
+              Posted by: <strong>{selectedPost?.ownerId?.name || 'Anonymous'}</strong>
+            </Text>
+            {/* ✅ Comments Section */}
+            <div className="space-y-4">
+              {selectedPost?.comments.map((comment) => (
+                <div key={comment._id} className="border border-gray-700 p-3 rounded-lg">
+                  <Text size="sm" weight={500}>
+                    {comment.commenterId?.name || 'Anonymous'}: 
+                  </Text>
+                  <Text size="sm" color="gray.6">
+                    {comment.text}
+                  </Text>
+                </div>
+              ))}
+            </div>
+            {/* ✅ Comment Input & Button */}
+            <Divider my="md" /> {/* Separate comments from input field */}
+            <div className="flex flex-col space-y-2">
+              <Input
+                value={commentInputs[selectedPost._id] || ''}
+                onChange={(e) =>
+                  setCommentInputs({ ...commentInputs, [selectedPost._id]: e.target.value })
+                }
+                placeholder="Write a comment..."
+                className="w-full"
+              />
+              <div className={classes.postButtonContainer}>
+                <Button
+                  size="sm"
+                  onClick={() => handleCommentSubmit(selectedPost._id)}
+                  className="mt-2"
+                >
+                  Comment
+                </Button>
               </div>
-            ))}
-          </div>
-          <Input
-            value={commentInputs[selectedPost._id] || ''}
-            onChange={(e) =>
-              setCommentInputs({ ...commentInputs, [selectedPost._id]: e.target.value })
-            }
-            placeholder="Write a comment..."
-          />
-          <Button size="sm" onClick={() => handleCommentSubmit(selectedPost._id)}>
-            Comment
-          </Button>
-        </Modal>
-      )}
+            </div>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 }

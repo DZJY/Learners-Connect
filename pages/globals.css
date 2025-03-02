@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.mantine-Modal-content {
+    overflow: hidden !important; /* ✅ Prevents outer scroll */
+  }
+  
+  .mantine-Modal-header {
+    overflow: hidden !important; /* ✅ Prevents scrolling on the title area */
+  }
+  
+  .mantine-Modal-body {
+    overflow-y: auto !important; /* ✅ Allows scrolling inside only */
+  }
