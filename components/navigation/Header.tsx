@@ -147,7 +147,7 @@ export function HeaderMegaMenu() {
   const [points, setPoints] = useState();
 
   useEffect(() => {
-    if (session){
+    if (session) {
       const fetchPoints = async () => {
         const response = await fetch(`/api/users/points?email=${email}`);
         const data = await response.json();

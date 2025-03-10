@@ -3,7 +3,6 @@ import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/
 import LearnersLogo from '../../images/Learners.png';
 import { StaticImageData } from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 const useStyles = createStyles((theme) => ({
@@ -110,7 +109,6 @@ interface FooterLinksProps {
 export function FooterLinks({ data }: FooterLinksProps) {
   const logoSrc = (LearnersLogo as StaticImageData).src;
   const { classes } = useStyles();
-  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

@@ -2,12 +2,15 @@ import React, { ReactNode } from 'react';
 import { HeaderMegaMenu } from './Header';
 import { FooterLinks } from './Footer';
 import Chatbot from '../Chatbot/Chatbot';
+import { useSession } from 'next-auth/react';
 
 type LayoutProps = {
   children: ReactNode;
 };
 
 const Layout = ({ children }: LayoutProps) => {
+  const { data: session} = useSession();
+  
   const allLinks = [
       {
         title: 'Features',
@@ -31,12 +34,27 @@ const Layout = ({ children }: LayoutProps) => {
         ]
       }
   ];
+
+  const halfLinks = [
+      {
+        title: 'Features',
+        links: [
+          {
+            label:'View All Notes',
+            link: '/all-notes',
+          },
+        ]
+      }
+  ];
+
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <HeaderMegaMenu />
       <div style={{ flex: '1 0 auto' }}>{children}</div>
       <Chatbot />
-      <FooterLinks data={allLinks} />
+      {session && <FooterLinks data={allLinks} />}
+      {!session && <FooterLinks data={halfLinks} />}
     </div>
   );
 };
