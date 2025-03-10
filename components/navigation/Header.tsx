@@ -34,7 +34,7 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { AuthenticationForm } from '../AuthForm';
 import LearnersLogo from '../../images/Learners.png';
@@ -143,6 +143,21 @@ export function HeaderMegaMenu() {
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes, theme } = useStyles();
   const { data: session } = useSession();
+  const email = session?.user?.email;
+  const [points, setPoints] = useState();
+
+  useEffect(() => {
+    if (session){
+      const fetchPoints = async () => {
+        const response = await fetch(`/api/users/points?email=${email}`);
+        const data = await response.json();
+        console.log("POINTS:",data.points);
+        setPoints(data.points);
+        console.log("new points", points)
+      };
+      fetchPoints();
+    }
+  }, []);
 
   // Get the context state and methods
   const { modalOpen, openModal, closeModal } = useModalContext();
@@ -205,8 +220,9 @@ export function HeaderMegaMenu() {
             {session ? (
               <>
                 <Group sx={{ height: '100%' }} align="center">
-                  {/* <ColorSchemeToggle /> */}
-                  {/* <Avatar radius="xl" /> */}
+                  <div style={{fontWeight:'bold'}}>
+                    {points} points
+                  </div>
                   <Text>{session?.user?.name}</Text>
                   <Button variant="default" onClick={() => signOut()}>
                     Sign Out
