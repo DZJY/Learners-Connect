@@ -174,7 +174,7 @@ export default function ForumPage() {
         }
 
         const data = await response.json();
-        setPosts([...posts, data.post]);
+        setPosts([data.post, ...posts]);
         setPostTitle('');
         setPostContent('');
       } catch (err) {
