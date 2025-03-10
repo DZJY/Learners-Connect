@@ -5,8 +5,31 @@ import Head from 'next/head';
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Layout from '../components/navigation/Layout';
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider, useSession } from 'next-auth/react';
 import { ModalProvider } from '../contexts/ModalContext';
+import { useRouter } from 'next/router';
+
+const protectedRoutes = [
+  '/my-notes',
+  '/new-upload',
+  '/forum',
+];
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === 'loading') {
+    return <p>Loading...</p>;
+  }
+
+  if (!session && protectedRoutes.includes(router.pathname)) {
+    router.replace('/'); // Redirect to main if not authenticated
+    return null;
+  }
+
+  return <>{children}</>;
+}
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
@@ -31,7 +54,9 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
           <SessionProvider session={pageProps.session}>
             <ModalProvider>
               <Layout>
-                <Component {...pageProps} />
+                <AuthGuard>
+                  <Component {...pageProps} />
+                </AuthGuard>
                 <Notifications />
               </Layout>
             </ModalProvider>
