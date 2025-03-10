@@ -6,6 +6,7 @@ import { rem } from '@mantine/core';
 import { useRef } from 'react';
 import { Card, createStyles } from '@mantine/core';
 import SearchBar from './NewSearchBar';
+import PDF from "../public/pdf.png"
 
 type Note = {
   _id: string;
@@ -112,7 +113,7 @@ export default function ArticleSection({
           <ArticleCard
             key={index}
             articleId={note._id}
-            image="https://i.imgur.com/Cij5vdL.png"
+            image={PDF.src}
             link={`/details/${note._id}`}
             title={note.title}
             description={`${note.length} bytes`}

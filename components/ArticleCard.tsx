@@ -143,7 +143,7 @@ export default function ArticleCard({
     <Card withBorder radius="md" className={cx(classes.card, className)} {...others}>
       <Card.Section>
         <a {...linkProps}>
-          <Image src={image} height={180} />
+          <Image src={image} height={240} />
         </a>
       </Card.Section>
 
