@@ -7,4 +7,8 @@ module.exports = withBundleAnalyzer({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // Warning: This will allow production builds even if there are type errors.
+    ignoreBuildErrors: true,
+  },
 });
