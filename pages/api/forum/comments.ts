@@ -22,13 +22,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: 'User not found' });
       }
 
+      console.log(user)
+
       // ✅ Add comment using `commenterId` (user ID)
       const post = await ForumPost.findByIdAndUpdate(
         postId,
         { 
           $push: { 
-            comments: { 
+            comments: {
               commenterId: user._id, // ✅ Store user ID
+              name: user.name,
               text,
               timestamp: new Date() 
             } 

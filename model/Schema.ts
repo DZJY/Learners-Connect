@@ -26,6 +26,7 @@ const CommentSchema = new Schema(
   {
     commenterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     text: { type: String, required: true },
+    name: { type: String, required: true },
     replies: {
       type: [ReplySchema],
       default: [],
