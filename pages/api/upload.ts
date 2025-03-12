@@ -292,6 +292,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               throw new Error('Unsupported file type');
             }
             console.log('textcontent:', textContent);
+            res.status(200).json({ message: 'File uploaded and summarized successfully' });
             const summary = await summarizeContent(textContent, isDocx);
             const qna = await generateQnA(summary);
             // Split the string into an array
