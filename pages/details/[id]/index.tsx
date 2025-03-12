@@ -1,7 +1,6 @@
-import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import TableOfContents from '../../../components/tableOfContents';
-import { Grid, Container, Button } from '@mantine/core';
+import { Grid, Container } from '@mantine/core';
 import { ObjectId } from 'mongodb';
 import BuyNowButton from '../../../components/BuyButton';
 import {
@@ -21,28 +20,42 @@ interface Note {
 }
 
 interface PageProps {
-  note: Note;
+  note: Note | null;
+  fileId: string | null;
+  sellerEmail: string | null;
 }
 
 export async function getServerSideProps(context: any) {
   const db = await connectToAuthDB();
   const { params } = context;
-  console.log(params);
+
   try {
+    console.log("ID: ",params.id);
     const note = await db.collection('summaries').findOne({ fileId: new ObjectId(params.id) });
 
-    if (!note) {
-      return { props: { note: null } };
+    const file = await db.collection('fs.files').findOne({ _id: new ObjectId(params.id) });
+
+    if (!note || !file) {
+      console.log("❌ Note or file not found!");
+      return { props: { note: null, fileId: null, sellerEmail: null } };
     }
+
+    console.log("✅ Note and file found:", note, file);
+
+    const fileId = file._id.toString();
+    const sellerEmail = file.metadata?.userEmail || "unknown";
+    console.log(sellerEmail);
 
     return {
       props: {
-        note: JSON.parse(JSON.stringify(note)),
+        note: JSON.parse(JSON.stringify(note)),  // Ensure it's serializable
+        fileId,
+        sellerEmail,
       },
     };
   } catch (error) {
-    console.error("Error fetching note:", error);
-    return { props: { note: null } };
+    console.error("🔥 Error fetching note or file:", error);
+    return { props: { note: null, fileId: null, sellerEmail: null } };
   }
 }
 
@@ -65,8 +78,7 @@ const links = [
   },
 ];
 
-export default function Page({ note }: PageProps) {
-  const router = useRouter();
+export default function Page({ note, fileId, sellerEmail }: PageProps) {
   if (!note) {
     return (
       <Container>
@@ -83,7 +95,7 @@ export default function Page({ note }: PageProps) {
   console.log(isBuyer);
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && session?.user?.email) {
       (async () => {
         try {
           const userEmail = session.user?.email;
@@ -91,9 +103,7 @@ export default function Page({ note }: PageProps) {
           const data = await response.json();
           if (response.ok) {
             const uploadedNotes = data.uploadedNotes.map((n: any) => n._id.toString());
-            console.log(uploadedNotes);
             const boughtNotes = data.boughtNotes.map((n: any) => n._id.toString());
-            console.log(boughtNotes);
             const noteFileIdString = note.fileId.toString();
             console.log(noteFileIdString)
 
@@ -108,6 +118,7 @@ export default function Page({ note }: PageProps) {
         }
       })();
     }
+
   }, [status, session, note.fileId]);
 
   
@@ -153,7 +164,7 @@ export default function Page({ note }: PageProps) {
             ) : (
               <BuyNowButton 
                 buyerEmail={session?.user?.email || ""}
-                sellerEmail="Test3@gmail.com" 
+                sellerEmail={sellerEmail || "unknown"}
                 noteId={note.fileId}
                 amount={10} 
               />
