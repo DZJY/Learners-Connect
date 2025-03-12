@@ -156,8 +156,9 @@ export function HeaderMegaMenu() {
         console.log("new points", points)
       };
       fetchPoints();
+      
     }
-  }, []);
+  }, [session]);
 
   // Get the context state and methods
   const { modalOpen, openModal, closeModal } = useModalContext();
