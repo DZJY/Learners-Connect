@@ -17,18 +17,13 @@ import {
 } from '@mantine/core';
 import { IconSend, IconMessageCircle, IconBookmark, IconShare } from '@tabler/icons-react';
 
-type Comment = {
-  _id: string;
-  commenterId: { _id: string; name: string; email: string }; // ✅ Ensure correct type
-  text: string;
-  timestamp: string;
-};
 
 type Post = {
   _id: string;
   title: string;
   content: string;
   ownerId: { name: string; email: string };
+  ownerName?: string;
   comments: { _id: string; name: string; text: string; timestamp: string }[];
   createdAt: string;
   updatedAt: string;
@@ -122,6 +117,7 @@ export default function ForumPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [selectedPostOwner, setSelectedPostOwner] = useState<{ name: string; email: string } | null>(null);
 
   // ✅ Get logged-in user's email and name
   const userEmail = session?.user?.email;
@@ -254,7 +250,11 @@ export default function ForumPage() {
         // Log the updated post comments
         console.log('✅ Updated Post Comments:', data.post.comments);
 
-        setSelectedPost(data.post);
+        setSelectedPost((prevPost) => 
+          prevPost 
+            ? { ...data.post, ownerName: selectedPostOwner } // ✅ Preserve ownerName
+            : data.post
+        );
         setCommentInputs({ ...commentInputs, [postId]: '' });
 
         // ✅ Re-fetch posts to ensure updated comments
@@ -323,7 +323,9 @@ export default function ForumPage() {
               p="lg"
               withBorder
               className={classes.postCard}
-              onClick={() => setSelectedPost(post)}
+              onClick={() => {setSelectedPost(post);
+                setSelectedPostOwner(post.ownerId);
+              }}
             >
               <Text className={classes.postsHeader}>{post.title}</Text>
               <Divider my="md" />
@@ -364,7 +366,7 @@ export default function ForumPage() {
             <Text className={classes.postsBody}>{selectedPost?.content}</Text>
             <Divider my="md" />
             <Text size="sm" color="dimmed" mb="md">
-              Posted by: <strong>{selectedPost?.ownerId?.name}</strong>
+              Posted by: <strong>{selectedPostOwner?.name}</strong>
             </Text>
             <div className="space-y-4">
               {selectedPost?.comments.map((comment) => (
