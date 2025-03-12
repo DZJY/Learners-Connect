@@ -238,7 +238,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       // Reject the promise after 5 seconds
-      setTimeout(() => reject(new Error('Form parse timeout')), 5000);
+      setTimeout(() => reject(new Error('Form parse timeout')), 15000);
     });
 
     try {
