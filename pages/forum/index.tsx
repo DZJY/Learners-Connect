@@ -117,8 +117,8 @@ export default function ForumPage() {
   const [error, setError] = useState<string>('');
 
   // ✅ Get logged-in user's email and name
-  const userEmail = session?.user?.email ?? '';
-  const userName = session?.user?.name ?? 'Anonymous';
+  const userEmail = session?.user?.email;
+  const userName = session?.user?.name;
 
   useEffect(() => {
     if (selectedPost) {
@@ -128,6 +128,7 @@ export default function ForumPage() {
     }
   }, [selectedPost]);
   
+
 
   // ✅ Fetch posts from the API
   useEffect(() => {
@@ -150,9 +151,26 @@ export default function ForumPage() {
     fetchPosts();
   }, []);
 
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('/api/forum');
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid response format');
+      }
+      setPosts(data);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError('Failed to fetch posts. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   // ✅ Handle new post submission
   const handlePostSubmit = async () => {
     if (postTitle.trim() && postContent.trim()) {
+      console.log(userName);
       try {
         const payload = {
           title: postTitle,
@@ -174,7 +192,12 @@ export default function ForumPage() {
         }
 
         const data = await response.json();
-        setPosts([data.post, ...posts]);
+        setPosts((prevPosts) => {
+          const updatedPosts = [data.post, ...prevPosts];
+          console.log("✅ Updated Posts in State:", updatedPosts); // ✅ Logs latest state correctly
+          return updatedPosts;
+        });
+        fetchPosts();
         setPostTitle('');
         setPostContent('');
       } catch (err) {
@@ -298,7 +321,7 @@ export default function ForumPage() {
               <Divider my="md" />
               <Group position="apart" mt="md" color="gray.5">
                 <Group>
-                  <Text size="sm">Posted by: {post.ownerId?.name || 'Anonymous'}</Text>
+                  <Text size="sm">Posted by: {post.ownerId?.name}</Text>
                 </Group>
               </Group>
             </Card>
@@ -338,14 +361,14 @@ export default function ForumPage() {
             <Divider my="md" />
             {/* ✅ "Posted by" Section */}
             <Text size="sm" color="dimmed" mb="md">
-              Posted by: <strong>{selectedPost?.ownerId?.name || 'Anonymous'}</strong>
+              Posted by: <strong>{selectedPost?.ownerId?.name}</strong>
             </Text>
             {/* ✅ Comments Section */}
             <div className="space-y-4">
               {selectedPost?.comments.map((comment) => (
                 <div key={comment._id} className="border border-gray-700 p-3 rounded-lg">
                   <Text size="sm" weight={500}>
-                    {comment.commenterId?.name || 'Anonymous'}: 
+                    {comment.commenterId?.name}: 
                   </Text>
                   <Text size="sm" color="gray.6">
                     {comment.text}
