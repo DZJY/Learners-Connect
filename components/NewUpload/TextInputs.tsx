@@ -29,7 +29,7 @@ const useStyles = createStyles((theme) => ({
     useEffect(() => {
       if (fileName) {
         setTitle(fileName);
-        setDescription(`Description for ${fileName} (optional)`);
+        setDescription(`Description for ${fileName}`);
       }
     }, [fileName]);
   
