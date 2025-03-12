@@ -5,40 +5,36 @@ import { ForumPost, Users } from '../../../model/Schema';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectMongo();
 
-  if (req.method === 'POST') {
+  if (req.method === 'POST') {  
     try {
-      const { postId, email, text } = req.body;
-
-      console.log("📥 Received Request Body:", { postId, email, text });  // ✅ Debugging
-
-      if (!postId || !email || !text) {
+      const { postId, email, text, name } = req.body; // ✅ Extract `name`
+      
+      if (!postId || !email || !text || !name) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
       // ✅ Find the user by email
       const user = await Users.findOne({ email });
       if (!user) {
-        console.error("❌ User not found with email:", email);
         return res.status(404).json({ error: 'User not found' });
       }
 
-      console.log(user)
-
-      // ✅ Add comment using `commenterId` (user ID)
+      // ✅ Add the comment
       const post = await ForumPost.findByIdAndUpdate(
         postId,
-        { 
-          $push: { 
+        {
+          $push: {
             comments: {
-              commenterId: user._id, // ✅ Store user ID
-              name: user.name,
+              commenterId: user._id, // ✅ Store the User ID
+              name, // ✅ Store the commenter's name
               text,
-              timestamp: new Date() 
-            } 
-          } 
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          },
         },
         { new: true }
-      ).populate('comments.commenterId', 'name email'); // ✅ Ensure username is fetched
+      ).populate('comments.commenterId', 'name email'); // ✅ Populate commenter details
 
       if (!post) {
         return res.status(404).json({ error: 'Post not found' });
@@ -51,28 +47,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  if (req.method === 'GET') {
-    try {
-      const { postId } = req.query;
-
-      if (!postId) {
-        return res.status(400).json({ error: 'Missing postId' });
-      }
-
-      // ✅ Fetch the post and ensure `commenterId` is populated with `name`
-      const post = await ForumPost.findById(postId)
-        .populate('comments.commenterId', 'name email'); // ✅ Populate commenter's name
-
-      if (!post) {
-        return res.status(404).json({ error: 'Post not found' });
-      }
-
-      return res.status(200).json(post);
-    } catch (error) {
-      console.error('❌ Error fetching post:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  }
-
-  return res.status(405).json({ error: 'Method Not Allowed' });
+  return res.status(405).json({ error: 'Method Not Allowed' }); 
 }

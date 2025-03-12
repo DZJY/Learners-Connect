@@ -17,12 +17,19 @@ import {
 } from '@mantine/core';
 import { IconSend, IconMessageCircle, IconBookmark, IconShare } from '@tabler/icons-react';
 
+type Comment = {
+  _id: string;
+  commenterId: { _id: string; name: string; email: string }; // ✅ Ensure correct type
+  text: string;
+  timestamp: string;
+};
+
 type Post = {
   _id: string;
   title: string;
   content: string;
   ownerId: { name: string; email: string };
-  comments: { _id: string; commenterId: { name: string }; text: string; timestamp: string }[];
+  comments: { _id: string; name: string; text: string; timestamp: string }[];
   createdAt: string;
   updatedAt: string;
 };
@@ -81,26 +88,26 @@ const useStyles = createStyles((theme) => ({
     gap: '1rem', // space-y-4 (16px)
   },
   postsHeader: {
-    fontSize: "2rem", // ✅ Adjust font size (e.g., 2rem = 32px)
-    fontWeight: 700,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
-    color: "#fff",    // ✅ White text (adjust as needed)
-    marginTop: "8px",
-    marginBottom: "8px",
+    fontSize: '2rem', // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 700, // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: '#fff', // ✅ White text (adjust as needed)
+    marginTop: '8px',
+    marginBottom: '8px',
   },
   postsBodyCard: {
-    fontSize: "1rem", // ✅ Adjust font size (e.g., 2rem = 32px)
-    fontWeight: 400,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
-    color: "#fff",    // ✅ White text (adjust as needed)
-    display: "-webkit-box",
-    WebkitBoxOrient: "vertical",
+    fontSize: '1rem', // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 400, // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: '#fff', // ✅ White text (adjust as needed)
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 5, // ✅ Truncates text after 5 lines
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   postsBody: {
-    fontSize: "1rem", // ✅ Adjust font size (e.g., 2rem = 32px)
-    fontWeight: 400,  // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
-    color: "#fff",    // ✅ White text (adjust as needed)
+    fontSize: '1rem', // ✅ Adjust font size (e.g., 2rem = 32px)
+    fontWeight: 400, // ✅ Adjust boldness (400 = normal, 700 = bold, 900 = extra bold)
+    color: '#fff', // ✅ White text (adjust as needed)
   },
 }));
 
@@ -122,13 +129,11 @@ export default function ForumPage() {
 
   useEffect(() => {
     if (selectedPost) {
-      document.body.style.overflow = "hidden"; // ✅ Disables background scroll
+      document.body.style.overflow = 'hidden'; // ✅ Disables background scroll
     } else {
-      document.body.style.overflow = "auto"; // ✅ Restores scrolling when modal closes
+      document.body.style.overflow = 'auto'; // ✅ Restores scrolling when modal closes
     }
   }, [selectedPost]);
-  
-
 
   // ✅ Fetch posts from the API
   useEffect(() => {
@@ -154,10 +159,15 @@ export default function ForumPage() {
   const fetchPosts = async () => {
     try {
       const response = await fetch('/api/forum');
-      const data = await response.json();
+      const data: Post[] = await response.json();
+
       if (!Array.isArray(data)) {
         throw new Error('Invalid response format');
       }
+
+      console.log('✅ Fetched Posts:', data); // Debugging
+
+      // ✅ Ensure `ownerId` and `commenterId` are always populated
       setPosts(data);
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -166,7 +176,7 @@ export default function ForumPage() {
       setIsLoading(false);
     }
   };
-  
+
   // ✅ Handle new post submission
   const handlePostSubmit = async () => {
     if (postTitle.trim() && postContent.trim()) {
@@ -194,7 +204,7 @@ export default function ForumPage() {
         const data = await response.json();
         setPosts((prevPosts) => {
           const updatedPosts = [data.post, ...prevPosts];
-          console.log("✅ Updated Posts in State:", updatedPosts); // ✅ Logs latest state correctly
+          console.log('✅ Updated Posts in State:', updatedPosts); // ✅ Logs latest state correctly
           return updatedPosts;
         });
         fetchPosts();
@@ -212,18 +222,18 @@ export default function ForumPage() {
     const comment = commentInputs[postId];
     if (comment?.trim()) {
       try {
-        if (!session?.user?.email) {
-          throw new Error('User email is missing in session.');
+        if (!session?.user?.email || !session.user.name) {
+          throw new Error('User email or name is missing in session.');
         }
 
         const payload = {
           postId,
-          email: session.user.email, // ✅ Send email instead of user ID
-          // email: 'test12@gmail.com',
+          email: session.user.email, // Send email
+          name: session.user.name, // Send name
           text: comment,
         };
 
-        console.log('📤 Sending Comment Payload:', payload);
+        console.log('📤 Sending Comment Payload:', payload); // Debugging
 
         const response = await fetch('/api/forum/comments', {
           method: 'POST',
@@ -231,7 +241,7 @@ export default function ForumPage() {
           body: JSON.stringify(payload),
         });
 
-        console.log('Response Status:', response.status);
+        console.log('Response Status:', response.status); // Debugging
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -239,12 +249,16 @@ export default function ForumPage() {
         }
 
         const data = await response.json();
-        console.log('✅ Received Comment Response:', data);
+        console.log('✅ Received Comment Response:', data); // Debugging
+
+        // Log the updated post comments
+        console.log('✅ Updated Post Comments:', data.post.comments);
 
         setSelectedPost(data.post);
         setCommentInputs({ ...commentInputs, [postId]: '' });
 
-        setPosts((prevPosts) => prevPosts.map((p) => (p._id === data.post._id ? data.post : p)));
+        // ✅ Re-fetch posts to ensure updated comments
+        fetchPosts();
       } catch (err) {
         console.error('Error adding comment:', err);
         setError('Failed to add comment. Please try again.');
@@ -311,13 +325,9 @@ export default function ForumPage() {
               className={classes.postCard}
               onClick={() => setSelectedPost(post)}
             >
-              <Text className={classes.postsHeader}>
-                {post.title}
-              </Text>
+              <Text className={classes.postsHeader}>{post.title}</Text>
               <Divider my="md" />
-              <Text className={classes.postsBodyCard}>
-                {post.content}
-              </Text>
+              <Text className={classes.postsBodyCard}>{post.content}</Text>
               <Divider my="md" />
               <Group position="apart" mt="md" color="gray.5">
                 <Group>
@@ -336,39 +346,31 @@ export default function ForumPage() {
             title={selectedPost?.title}
             styles={{
               title: {
-                fontSize: "2rem",  // ✅ Larger title
-                fontWeight: 700,      // ✅ Bold text
-                width: "100%",        // ✅ Make it take full width
+                fontSize: '2rem',
+                fontWeight: 700,
+                width: '100%',
               },
               inner: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-                content: {
-                  width: "100%",
-                  maxWidth: "48rem",
-                  minWidth: "50vw",
-                  minHeight: "50vh",
-                  maxHeight: "90vh", // ✅ Prevents modal from growing too large
-                  padding: "1.5rem",
-                },
-              
+              content: {
+                width: '100%',
+                maxWidth: '48rem',
+                minWidth: '50vw',
+                minHeight: '50vh',
+                maxHeight: '90vh',
+                padding: '1.5rem',
+              },
             }}
           >
-            
-            {/* ✅ Content Styling */}
-            <Text className={classes.postsBody}>
-              {selectedPost?.content}
-            </Text>
-            {/* ✅ Divider to Separate Post from Comments */}
+            <Text className={classes.postsBody}>{selectedPost?.content}</Text>
             <Divider my="md" />
-            {/* ✅ "Posted by" Section */}
             <Text size="sm" color="dimmed" mb="md">
               Posted by: <strong>{selectedPost?.ownerId?.name}</strong>
             </Text>
-            {/* ✅ Comments Section */}
             <div className="space-y-4">
               {selectedPost?.comments.map((comment) => (
                 <div key={comment._id} className="border border-gray-700 p-3 rounded-lg">
                   <Text size="sm" weight={500}>
-                    {comment.commenterId?.name}: 
+                    {comment.name || 'Anonymous'}: {/* ✅ Use the `name` field directly */}
                   </Text>
                   <Text size="sm" color="gray.6">
                     {comment.text}
@@ -376,8 +378,7 @@ export default function ForumPage() {
                 </div>
               ))}
             </div>
-            {/* ✅ Comment Input & Button */}
-            <Divider my="md" /> {/* Separate comments from input field */}
+            <Divider my="md" />
             <div className="flex flex-col space-y-2">
               <Input
                 value={commentInputs[selectedPost._id] || ''}
