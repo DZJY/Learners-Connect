@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { postId, email, text, name } = req.body; // ✅ Extract `name`
       
       if (!postId || !email || !text || !name) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        return res.status(400).json({ error: 'Missing required field' });
       }
 
       // ✅ Find the user by email
