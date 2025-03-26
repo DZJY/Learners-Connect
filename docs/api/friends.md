@@ -3,7 +3,6 @@
 
 ## 📂 `docs/api/friends.md`
 
-```markdown
 # Friends API
 
 Handles adding, removing, and fetching friends for a user.
@@ -26,7 +25,6 @@ Removes a friend.
 
 ### Response
 
-```json
 {
   "message": "Friend added",
   "friends": ["friend@example.com"]

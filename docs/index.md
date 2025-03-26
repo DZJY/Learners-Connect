@@ -1,6 +1,6 @@
 # File Summarization API
 
-Welcome to the **File Summarization API** documentation. This system allows users to upload lecture files (PDF, DOCX, MP4), extracts textual content, summarizes it using OpenAI, generates QnA pairs, and stores everything in MongoDB.
+Welcome to the **Learners' Connect API** documentation. This system allows users to buy, sell, upload notes files (PDF, DOCX, MP4), extracts textual content, summarizes it using OpenAI, generates QnA pairs, and stores everything in MongoDB.
 
 ## Features
 

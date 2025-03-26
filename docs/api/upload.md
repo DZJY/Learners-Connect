@@ -16,7 +16,6 @@ Accepts a multipart form containing the file and metadata. Extracts content, sum
 
 ## Response
 
-```json
 {
   "message": "File uploaded and summarized successfully",
   "summary": "..."

@@ -3,7 +3,7 @@
 
 ### 📂 `docs/api/download.md`
 
-```markdown
+
 # Download Summary API
 
 **POST** `/api/download`

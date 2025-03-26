@@ -14,7 +14,6 @@ Fetches uploaded and purchased notes for the user.
 
 ### Response
 
-```json
 {
   "uploadedNotes": [...],
   "boughtNotes": [...]

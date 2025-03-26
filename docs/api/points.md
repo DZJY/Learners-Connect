@@ -3,7 +3,6 @@
 
 ## 📂 `docs/api/points.md`
 
-```markdown
 # Points API
 
 Manages user points for purchases and rewards.
