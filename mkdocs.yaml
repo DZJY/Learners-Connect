@@ -1,0 +1,17 @@
+site_name: Learners' Connect APIs
+nav:
+  - Home: index.md
+  - API Reference:
+      - Upload & Summarize: api/upload.md
+      - Download Summary: api/download.md
+      - Users: api/users.md
+      - Points: api/points.md
+      - Friends: api/friends.md
+      - Buy Notes: api/buy.md
+  - Components:
+      - File Parsing: components/parsers.md
+      - Summarization: components/summarizer.md
+      - QnA Generation: components/qna.md
+      - Storage: components/storage.md
+theme:
+  name: material

@@ -76,3 +76,30 @@ This template comes with several essential features:
 - `storybook` – starts storybook dev server
 - `storybook:build` – build production storybook bundle to `storybook-static`
 - `prettier:write` – formats all files with Prettier
+
+
+# 📘 MkDocs Documentation Setup
+
+This project uses **[MkDocs](https://www.mkdocs.org/)** to serve and build developer documentation.
+
+---
+
+## ⚙️ Requirements
+
+- Python 3.6+
+- pip (Python package manager)
+
+---
+
+## 🚀 Installation
+
+1. **Install MkDocs**:
+
+```bash
+pip install mkdocs
+pip install mkdocs-material
+
+2. **Running Locally**:
+mkdocs serve
+Go to http://127.0.0.1:8000
+
