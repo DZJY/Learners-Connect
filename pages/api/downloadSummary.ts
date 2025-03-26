@@ -1,20 +1,26 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import officegen from "officegen";
+import { NextApiRequest, NextApiResponse } from 'next'; // Next.js API types
+import officegen from 'officegen'; // Library to generate Office documents (Word, PowerPoint, Excel)
 
+// API handler for generating a .docx file from a summary
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "POST") {
-    const summary = req.body.summary;  // Extract summary from the request body
-    const docx = officegen("docx");
+  // Allow only POST requests
+  if (req.method === 'POST') {
+    const { summary } = req.body; // Extract summary text from request body
 
-    // Add the summary to the document
+    // Create a new Word document
+    const docx = officegen('docx');
+
+    // Add a paragraph to the document and insert the summary text
     docx.createP().addText(summary);
 
-    // Pipe generated file to the response
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-    res.setHeader("Content-Disposition", "attachment; filename=Summary.docx");
+    // Set appropriate headers so the browser downloads the file as a Word document
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', 'attachment; filename=Summary.docx');
 
-    docx.generate(res);  // Stream to response
+    // Generate and stream the document directly to the response
+    docx.generate(res);
   } else {
-    res.status(405).json({ message: "Method not allowed" });  // Error for unsupported methods
+    // Return error for unsupported request methods
+    res.status(405).json({ message: 'Method not allowed' });
   }
 };
