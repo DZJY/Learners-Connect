@@ -1,3 +1,56 @@
+# LearnersConnect  
+### _Where Community Meets Curiosity_
+
+LearnersConnect is a next-gen collaborative platform designed to revolutionize the way students learn by tackling key challenges in today’s academic environment.
+
+---
+
+## 🚨 Problem Statement
+
+Many students today face common hurdles:
+
+- **Siloed Study Methods**  
+  Studying in isolation limits idea exchange and peer learning.
+
+- **Limited Collaboration Opportunities**  
+  Few structured platforms exist to connect like-minded learners.
+
+- **Inefficient Resource Sharing**  
+  Students struggle to access and share quality study materials.
+
+- **Underutilization of GenAI**  
+  Despite the rise of AI tools, students often lack access to solutions that can enhance learning efficiency.
+
+---
+
+## 💡 Our Solution
+
+LearnersConnect bridges these gaps by blending community-driven features with cutting-edge AI tools:
+
+### 🔍 SummAIze  
+Empowers students with AI-driven note summarization and interactive Q&A support for smarter, faster learning.
+
+### 🛒 TradeMarket  
+A secure peer-to-peer marketplace for buying, selling, and sharing study materials easily.
+
+### 💬 Learners Hub  
+A community-driven forum to encourage engagement, collaboration, and discussion on relevant topics.
+
+---
+
+## 🧰 Tech Stack
+
+- **Frontend**: [Next.js](https://nextjs.org/) with [Mantine UI](https://mantine.dev/)
+- **Backend**: Next.js API routes  
+- **Cloud Functions**: Google Cloud Functions (for features like OCR)
+- **AI Capabilities**: [OpenAI API](https://platform.openai.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/)
+
+---
+
+> Designed to foster curiosity. Built to power community.  
+> Join us at **LearnersConnect** — _Where Community Meets Curiosity_.
+
 # Setup
 
 Watch Tailwind CSS File
